@@ -1,0 +1,77 @@
+# Enter your code here. Read input from STDIN. Print output to STDOUT
+import sys
+all_input_data = sys.stdin.readlines()
+node_number = int(all_input_data[0][:-1])
+swap_number = int(all_input_data[node_number+1][0:-1])
+every_number_list = []
+every_swap_list = []
+for i in range(node_number):
+    input_node_data_list = all_input_data[i+1]
+    space_index = input_node_data_list.index(" ")
+    end_length = len(input_node_data_list)
+    every_number_list.append(input_node_data_list[0:space_index])
+    every_number_list.append(input_node_data_list[space_index:end_length-1])
+for i in range(swap_number):
+    slash_index = input_node_data_list.index("\n")
+    every_swap_list.append(int(all_input_data[node_number+2+i][0:slash_index]))
+class Node:
+    def __init__(self,left=None,right=None,data=""):
+        self.left = left
+        self.right = right
+        self.data = data
+    def node_list_in_order_of_layer_depth(self):
+        root = self
+        if root:
+            queue = []
+            queue.append([root,1])
+            node_queue = []
+            while queue:
+                root_depth = queue.pop(0)
+                root = root_depth[0]
+                depth = root_depth[1]
+                node_queue.append([root,depth])
+                if root.left:
+                    queue.append([root.left,depth+1])
+                if root.right:
+                    queue.append([root.right,depth+1])
+        return node_queue
+root = Node(data="1")
+root_original = root
+node_queue = []
+node_queue.append(root)
+while node_queue:
+        root = node_queue.pop(0)
+        if every_number_list:
+            node_data = every_number_list.pop(0)
+            if int(node_data) != -1:
+                left_node = Node(data=node_data)
+                root.left = left_node
+                node_queue.append(left_node)
+        if every_number_list:
+            node_data = every_number_list.pop(0)
+            if int(node_data) != -1:
+                right_node = Node(data=node_data)
+                root.right = right_node
+                node_queue.append(right_node)
+
+def swap_nodes(root,depth): 
+    node_list_in_order_of_layer_depth = root.node_list_in_order_of_layer_depth()
+    for node in node_list_in_order_of_layer_depth:
+        if(node[1] % depth == 0):
+            left_node_holder = node[0].left
+            node[0].left = node[0].right
+            node[0].right = left_node_holder
+    return root
+def in_order_print(root):
+    if root:
+        if root.left:
+            in_order_print(root.left)
+        print int(root.data),
+        if root.right:
+            in_order_print(root.right)
+        return
+
+for depth in every_swap_list:
+    root = swap_nodes(root_original,depth)
+    in_order_print(root)
+    print
