@@ -1,0 +1,83 @@
+import sys
+def get_std_in_data(src):
+    data_list_used = {}
+    data_list_used["node_number"] = int(src[0][0:src[0].index(" ")])
+    data_list_used["set_number"] = int(src[0][src[0].index(" ")+1:])
+    data_list_used["edge_distance_list"] = []
+    data_list_used["set_data_list"] = []
+    for i in range(data_list_used["node_number"]-1):
+        data_list_used["edge_distance_list"].append(src[i+1][0:-1])
+    for i in range(data_list_used["set_number"]*2):
+        if i < data_list_used["set_number"]*2-1:
+            data_list_used["set_data_list"].append(src[i+data_list_used["node_number"]][0:-1])
+        else:
+            data_list_used["set_data_list"].append(src[i+data_list_used["node_number"]])
+    return data_list_used
+data_list_used = get_std_in_data(sys.stdin.readlines())
+class Node:
+    def __init__(self,parent,children,val):
+        self.parent = parent
+        self.children = children
+        self.val = val
+    def add_children(self,children=[]):
+        for foo in children:
+            self.children.append(foo)
+    def get_node(val,root):
+        queue = []
+        queue.append(root)
+        while queue:
+            node = queue.pop(0)
+            children = node.children
+            for foo in children:
+                queue.append(foo)            
+            if(str(node.val).strip() == str(val)):
+                return node
+    def get_two_node_dist(node1,node2):
+        val1 = node1.parent.val
+        count = 1
+        while node2.parent:
+            val2 = node2.parent.val
+            count += 1
+            if(val2 == val1):
+                break
+            node2 = node2.parent
+        return count
+    def get_expression_result(set_container,root):
+        result = 0
+        while set_container:
+            if(len(set_container)<=1):
+                break
+            foo = set_container.pop(0)
+            node1 = Node.get_node(foo,root)
+            for goo in set_container:
+                node2 = Node.get_node(goo,root)
+                dist = Node.get_two_node_dist(node1,node2)
+                result = result + (int(foo)*int(goo)*int(dist))
+        result = result%(10**9+7)
+        print(result)
+i = 1
+parent_node = {}
+children_node = {}
+for foo in data_list_used["edge_distance_list"]:
+    parent_val = foo[0:foo.index(" ")].strip()
+    child_val = foo[foo.index(" "):].strip()
+    if not parent_val in parent_node:
+        name_par = "node"+str(i)
+        if(str(parent_val) == "1"):
+            name_par = Node(None,[],parent_val)
+        else:
+            name_par = children_node[parent_val]
+        parent_node[parent_val] = name_par
+        i += 1
+    else:
+        name_par = parent_node[parent_val]
+    name_chil = "node"+str(i)
+    name_chil = Node(name_par,[],child_val)  
+    children_node[child_val] = name_chil
+    name_par.add_children([name_chil])
+    i += 1
+i = 1
+while i < len(data_list_used['set_data_list']):
+    foo = data_list_used['set_data_list'][i].split(" ")
+    Node.get_expression_result(foo,parent_node["1"])
+    i += 2
