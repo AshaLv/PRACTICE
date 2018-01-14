@@ -1,0 +1,51 @@
+""" Node is defined as
+class node:
+  def __init__(self, data):
+      self.data = data
+      self.left = None
+      self.right = None
+"""
+def check_binary_search_tree_(root):
+    queue = []
+    queue.append(root)
+    while queue:
+        node = queue.pop(0)
+        if node.left:
+            if left_node_greater(node):
+                return False
+            queue.append(node.left)
+        if node.right:
+            if right_node_less(node):
+                return False
+            queue.append(node.right)
+    return True
+def left_node_greater(root):
+    max_ = root.data
+    root_ = root
+    queue = []
+    queue.append(root_.left)
+    while queue:
+        node = queue.pop(0)
+        if node.data >= max_:
+            return True
+        if node.left:
+            queue.append(node.left)
+        if node.right:
+            queue.append(node.right)
+    #print(str(left_tree_root_data) + "..l.." + str(root_data))
+    return False
+def right_node_less(root):
+    min_ = root.data
+    root_ = root
+    queue = []
+    queue.append(root_.right)
+    while queue:
+        node = queue.pop(0)
+        if node.data <= min_:
+            return True
+        if node.left:
+            queue.append(node.left)
+        if node.right:
+            queue.append(node.right)
+    #print(str(right_tree_root_data) + "..r.." + str(root_data))
+    return False
